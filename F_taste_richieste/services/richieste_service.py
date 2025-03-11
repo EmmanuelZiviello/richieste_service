@@ -8,7 +8,7 @@ from F_taste_richieste.models.richiesta_aggiunta_paziente import RichiestaAggiun
 
 
 
-class PazienteService:
+class RichiesteService:
 
     
     @staticmethod
