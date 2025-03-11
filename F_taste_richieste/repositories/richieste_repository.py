@@ -6,19 +6,25 @@ from F_taste_richieste.db import get_session
 class RichiestaAggiuntaPazienteRepository:
 
     @staticmethod
-    def find_new_requests(paziente_id, session=None):
+    def add(richiesta, session=None):
         session = session or get_session('patient')
-        return RichiestaAggiuntaPazienteModel.query.filter_by(paziente_id=paziente_id, accettata=False).all()
+        session.add(richiesta)
+        session.commit()
 
     @staticmethod
-    def find_by_id_paziente_and_id_nutrizionista(paziente_id, nutrizionista_id, session=None):
+    def find_new_requests(id_paziente, session=None):
         session = session or get_session('patient')
-        return RichiestaAggiuntaPazienteModel.query.filter_by(paziente_id=paziente_id, nutrizionista_id=nutrizionista_id).first()
+        return session.query(RichiestaAggiuntaPazienteModel).filter_by(id_paziente=id_paziente, accettata=False).all()
 
     @staticmethod
-    def find_active_request(paziente_id, session=None):
+    def find_by_id_paziente_and_id_nutrizionista(id_paziente, id_nutrizionista, session=None):
         session = session or get_session('patient')
-        return RichiestaAggiuntaPazienteModel.query.filter_by(paziente_id=paziente_id, accettata=True).first()
+        return session.query(RichiestaAggiuntaPazienteModel).filter_by(id_paziente=id_paziente, id_nutrizionista=id_nutrizionista).first()
+
+    @staticmethod
+    def find_active_request(id_paziente, session=None):
+        session = session or get_session('patient')
+        return session.query(RichiestaAggiuntaPazienteModel).filter_by(id_paziente=id_paziente, accettata=True).first()
 
     @staticmethod
     def delete_request(richiesta, session=None):
@@ -26,6 +32,7 @@ class RichiestaAggiuntaPazienteRepository:
         session.delete(richiesta)
         session.commit()
 
+    #da rimuovere, è uguale a add
     @staticmethod
     def save_richiesta(richiesta, session=None):
         session = session or get_session('patient')
