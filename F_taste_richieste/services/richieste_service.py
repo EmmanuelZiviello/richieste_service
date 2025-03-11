@@ -14,16 +14,19 @@ class RichiesteService:
     @staticmethod
     def add(s_richiesta):
         if "id_paziente" not in s_richiesta or "id_nutrizionista" not in s_richiesta:
-            return {"esito add_richiesta":"Dati mancanti"}, 400
+            return {"status_code":"400"}, 400
+            #return {"esito add_richiesta":"Dati mancanti"}, 400
         session=get_session('dietitian')
         id_paziente=s_richiesta["id_paziente"]
         id_nutrizionista=s_richiesta["id_nutrizionista"]
         richiesta=RichiestaAggiuntaPazienteRepository.find_by_id_paziente_and_id_nutrizionista(id_paziente,id_nutrizionista,session)
         if richiesta is not None:
             session.close()
-            return {"message": "richiesta già presente"}, 403
+            return {"status_code":"403"}, 403
+            #return {"message": "richiesta già presente"}, 403
         else:
             richiesta=RichiestaAggiuntaPazienteModel(id_paziente,id_nutrizionista)
             RichiestaAggiuntaPazienteRepository.add(richiesta,session)
             session.close()
-            return {"message": "richiesta aggiunta a propria lista pazienti inviata con successo"}, 200
+            return {"status_code":"200"}, 200
+            #return {"message": "richiesta aggiunta a propria lista pazienti inviata con successo"}, 200
