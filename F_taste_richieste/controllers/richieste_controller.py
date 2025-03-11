@@ -23,7 +23,7 @@ class RichiestaAggiuntaPaziente(Resource):
     @paziente_required()
     def get(self):
         identity = get_jwt_identity()
-       # return RichiestaAggiuntaPazienteService.get_richieste_utente(identity)
+        return RichiesteService.get_richieste_utente(identity)
 
     @paziente_ns.expect(gestisciRichiestaRequestModel)
     @paziente_ns.doc('accetta/revoca la richiesta di aggiunta')
