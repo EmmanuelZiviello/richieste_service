@@ -7,7 +7,7 @@ from F_taste_richieste.services.richieste_service import RichiesteService
 from F_taste_richieste.namespaces import paziente_ns
 
 gestisciRichiestaRequestModel = paziente_ns.model('gestisci Richiesta Request Model', {
-    'id_nutrizionista' : fields.Integer(required=True),
+    'fk_nutrizionista' : fields.Integer(required=True),
     'conferma' : fields.Boolean(required=True),
 }, strict=True)
 
@@ -33,7 +33,7 @@ class RichiestaAggiuntaPaziente(Resource):
         json = request.get_json()
         if not json:
             return {"message": "Dati non forniti"}, 400
-       # return RichiestaAggiuntaPazienteService.gestisci_richiesta(identity, json['fk_nutrizionista'], json['conferma'])
+        return RichiesteService.gestisci_richiesta(identity, json['fk_nutrizionista'], json['conferma'])
 
     @paziente_required()
     @paziente_ns.doc('elimina la condivisione con il tuo nutrizionista')
