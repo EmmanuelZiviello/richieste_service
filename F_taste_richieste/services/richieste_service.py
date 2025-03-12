@@ -4,6 +4,7 @@ from F_taste_richieste.db import get_session
 from F_taste_richieste.kafka.kafka_producer import send_kafka_message
 from F_taste_richieste.utils.kafka_helpers import wait_for_kafka_response
 from F_taste_richieste.models.richiesta_aggiunta_paziente import RichiestaAggiuntaPazienteModel
+from F_taste_richieste.models.richiesta_revocata import RichiestaRevocataModel
 from F_taste_richieste.schemas.richiesta_aggiunta_paziente import RichiestaAggiuntaPazienteSchema
 
 richiesta_schema_for_dump = RichiestaAggiuntaPazienteSchema()
@@ -74,10 +75,13 @@ class RichiesteService:
                         session.close()
                         return {"message": "richiesta accettata con successo"}, 200
                     elif response.get("status_code") == "500":
+                         session.close()
                          return {"message": "Errore nella comunicazione con Kafka"}, 500
                     elif response.get("status_code") == "400":
+                         session.close()
                          return {"message": "Dati mancanti per aggiornare il paziente ed il suo nutrizionista"}, 400
                     elif response.get("status_code") == "404":
+                         session.close()
                          return {"message": "Paziente o nutrizionista non presenti nel database"}, 404
                     
                     
@@ -94,3 +98,38 @@ class RichiesteService:
                 return {'message' : 'non puoi rifiutare una richiesta gia accettata'}, 403
     
                   
+    @staticmethod
+    def revoca_condivisione(id_paziente):
+         session=get_session('patient')
+         richiesta=RichiestaAggiuntaPazienteRepository.find_active_request(id_paziente,session)
+         if richiesta is None:
+            session.close()
+            return {'message' : 'richiesta non trovata'}, 404
+         else:
+              message={"id_paziente":id_paziente}
+              send_kafka_message("patient.removeFk.request",message)
+              response = wait_for_kafka_response(["patient.removeFk.success", "patient.removeFk.failed"])
+              #controllo sul valore in response per capire se si può aggiornare il db
+              if response is None:
+                    session.close()
+                    return {"message": "Errore nella comunicazione con Kafka"}, 500
+              
+              if response.get("status_code") == "200":
+                   email_nutrizionista = response.get("email_nutrizionista")
+                   if email_nutrizionista:
+                         richiesta_revocata = RichiestaRevocataModel(id_paziente, email_nutrizionista, richiesta.data_richiesta, richiesta.data_accettazione)
+                         RichiestaAggiuntaPazienteRepository.add(richiesta_revocata,session)
+                         RichiestaAggiuntaPazienteRepository.delete_request(richiesta,session)
+                         session.close()
+                         return {"message": "richiesta revocata con successo"}, 204
+              elif response.get("status_code") == "500":
+                         session.close()
+                         return {"message": "Errore nella comunicazione con Kafka"}, 500
+              elif response.get("status_code") == "400":
+                         session.close()
+                         return {"message": "Dati mancanti per aggiornare il paziente ed il suo nutrizionista"}, 400
+              elif response.get("status_code") == "404":
+                         session.close()
+                         return {"message": "Paziente o nutrizionista non presenti nel database"}, 404
+              
+              

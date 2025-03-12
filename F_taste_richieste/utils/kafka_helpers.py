@@ -15,6 +15,8 @@ consumer_response = KafkaConsumer(
     'patient.delete.failed',
     'patient.updateFk.success',
     'patient.updateFk.failed',
+    'patient.removeFk.success',
+    'patient.removeFk.failed',
     bootstrap_servers=KAFKA_BROKER_URL,
     client_id="richieste_consumer",
     group_id="richieste_service_response",

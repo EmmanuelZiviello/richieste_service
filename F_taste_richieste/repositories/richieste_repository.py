@@ -38,7 +38,7 @@ class RichiestaAggiuntaPazienteRepository:
         session = session or get_session('patient')
         session.add(richiesta)
         session.commit()
-
+    #da rimuovere, meglio crearla nel service e fare solo add
     @staticmethod
     def create_richiesta_revocata(paziente, richiesta, email_nutrizionista,session=None):
         session = session or get_session('patient')

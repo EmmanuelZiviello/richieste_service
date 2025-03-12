@@ -34,7 +34,7 @@ def consume(app):
             topic=message.topic
             if topic ==  "richieste.add.request":
                 response, status = RichiesteService.add(data)  # Chiama il Service
-                topic_producer = "richieste.add.success" if status == 200 else "richieste.add.failed"
+                topic_producer = "richieste.add.success" if status == 204 else "richieste.add.failed"
                 send_kafka_message(topic_producer, response)
             
             

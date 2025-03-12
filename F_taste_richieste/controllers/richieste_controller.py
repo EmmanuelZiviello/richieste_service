@@ -39,4 +39,4 @@ class RichiestaAggiuntaPaziente(Resource):
     @paziente_ns.doc('elimina la condivisione con il tuo nutrizionista')
     def delete(self):
         identity = get_jwt_identity()
-        #return RichiestaAggiuntaPazienteService.revoca_condivisione(identity)
+        return RichiesteService.revoca_condivisione(identity)
