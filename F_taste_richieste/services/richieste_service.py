@@ -122,6 +122,8 @@ class RichiesteService:
                          RichiestaAggiuntaPazienteRepository.delete_request(richiesta,session)
                          session.close()
                          return {"message": "richiesta revocata con successo"}, 204
+                   session.close()
+                   return {"message":"email nutrizionista non ottenuta in modo corretto"}, 400 
               elif response.get("status_code") == "500":
                          session.close()
                          return {"message": "Errore nella comunicazione con Kafka"}, 500
