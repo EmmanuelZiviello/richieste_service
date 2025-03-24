@@ -23,7 +23,7 @@ class RichiesteService:
         if richiesta is not None:
             session.close()
             return {"status_code":"403"}, 403
-        richiesta=RichiestaAggiuntaPazienteRepository.find_by_id_paziente_and_id_nutrizionista(id_paziente,id_nutrizionista,session)
+        richiesta=RichiestaAggiuntaPazienteModel(id_paziente,id_nutrizionista)
         richiesta.accettata = True
         richiesta.data_accettazione = datetime.now()
         RichiestaAggiuntaPazienteRepository.add(richiesta,session)
