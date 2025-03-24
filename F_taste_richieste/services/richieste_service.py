@@ -12,7 +12,27 @@ richiesta_schema_for_dump = RichiestaAggiuntaPazienteSchema()
 
 class RichiesteService:
 
-    
+    @staticmethod
+    def add_registrazione_paziente(s_richiesta):
+        if "id_paziente" not in s_richiesta or "id_nutrizionista" not in s_richiesta:
+            return {"status_code":"400"}, 400
+        session=get_session('dietitian')
+        id_paziente=s_richiesta["id_paziente"]
+        id_nutrizionista=s_richiesta["id_nutrizionista"]
+        richiesta=RichiestaAggiuntaPazienteRepository.find_by_id_paziente_and_id_nutrizionista(id_paziente,id_nutrizionista,session)
+        if richiesta is not None:
+            session.close()
+            return {"status_code":"403"}, 403
+        richiesta=RichiestaAggiuntaPazienteRepository.find_by_id_paziente_and_id_nutrizionista(id_paziente,id_nutrizionista,session)
+        richiesta.accettata = True
+        richiesta.data_accettazione = datetime.now()
+        RichiestaAggiuntaPazienteRepository.add(richiesta,session)
+        session.close()
+        return {"status_code":"200"}, 200
+        
+          
+          
+
     @staticmethod
     def add(s_richiesta):
         if "id_paziente" not in s_richiesta or "id_nutrizionista" not in s_richiesta:

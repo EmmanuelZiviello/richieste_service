@@ -15,6 +15,7 @@ KAFKA_BROKER_URL = "kafka-ftaste-kafka-ftaste.j.aivencloud.com:11837"
 
 consumer = KafkaConsumer(
     'richieste.add.request',
+    'patient.addRichiesta.request',
     bootstrap_servers=KAFKA_BROKER_URL,
     client_id="richieste_consumer",
     group_id="richieste_service",
@@ -36,5 +37,9 @@ def consume(app):
                 response, status = RichiesteService.add(data)  # Chiama il Service
                 topic_producer = "richieste.add.success" if status == 200 else "richieste.add.failed"
                 send_kafka_message(topic_producer, response)
-            
+            elif topic == "patient.addRichiesta.request" :
+                response,status= RichiesteService.add_registrazione_paziente(data)
+                topic_producer= "patient.addRichiesta.success" if status == 200 else "patient.addRichiesta.failed"
+                #send_kafka_message(topic_producer,response)
+             
             
